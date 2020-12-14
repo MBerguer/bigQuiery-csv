@@ -1,0 +1,15 @@
+SELECT * 
+FROM (
+  SELECT *, json_extract_scalar(payload, '$.action') as action
+  FROM # `githubarchive.year.2019` **WATCH YOUR QUOTA**!
+  WHERE repo.name = 'Homebrew/brew'
+)
+WHERE (
+     (type = 'WatchEvent')
+  OR (type = 'PushEvent')
+  OR (type = 'PullRequestEvent' AND (json_extract_scalar(payload, '$.action') in ('opened', 'closed')))
+  OR (type = 'IssuesEvent' AND (json_extract_scalar(payload, '$.action') in ('opened', 'closed', 'reopened')))
+  OR (type = 'IssueCommentEvent' AND (json_extract_scalar(payload, '$.action') in ('created')))
+  OR (type = 'ReleaseEvent')
+)
+;
